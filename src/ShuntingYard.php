@@ -5,21 +5,14 @@
  */
 class ShuntingYard
 {
-    const PLUS = '+';
-    const MINUS = '-';
-    const MUL = '*';
-    const DIV = '/';
-    const LEFT_PAREN = '(';
-    const RIGHT_PAREN = ')';
-
     // operator => priority(larger is higher)
     const OPERATORS_TO_PRIORITY = [
-        self::PLUS => 0,
-        self::MINUS => 0,
-        self::MUL => 1,
-        self::DIV => 1,
-        self::LEFT_PAREN => -1,
-        self::RIGHT_PAREN => -1,
+        '+' => 0,
+        '-' => 0,
+        '*' => 1,
+        '/' => 1,
+        '(' => -1,
+        ')' => -1,
     ];
 
     /** @var \SplQueue */
@@ -97,8 +90,8 @@ class ShuntingYard
     {
         if ($this->operatorStack->isEmpty()) {
             $this->operatorStack->push($o1);
-        } elseif (self::RIGHT_PAREN === $o1) {
-            while (self::LEFT_PAREN !== ($o2 = $this->operatorStack->pop())) {
+        } elseif (')' === $o1) {
+            while ('(' !== ($o2 = $this->operatorStack->pop())) {
                 $this->outputQueue->enqueue($o2);
             }
         } else {

@@ -6,16 +6,16 @@ class ShuntingYardTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider provideTestData
      */
-    public function infixToPrefix($testData, $expected)
+    public function infixToPrefix($data, $expected)
     {
-        $this->assertSame($expected, (new ShuntingYard())->infixToPrefix($testData));
+        $this->assertSame($expected, (new ShuntingYard())->infixToPrefix($data));
     }
 
     public function provideTestData()
     {
         return [
             ['1 + 2', '1 2 +'],
-            ['4 * 3', '4 3 *'],
+            ['0 - 0', '0 0 -'],
             ['3 + 4 * 2', '3 4 2 * +'],
             ['3 * 4 + 2', '3 4 * 2 +'],
             ['3 + 4 * 2 + 1', '3 4 2 * + 1 +'],
