@@ -7,12 +7,12 @@ class ShuntingYard
 {
     // operator => priority(larger is higher)
     const OPERATORS_TO_PRIORITY = [
-        '+' => 0,
-        '-' => 0,
-        '*' => 1,
-        '/' => 1,
-        '(' => -1,
-        ')' => -1,
+        '+' => 1,
+        '-' => 1,
+        '*' => 2,
+        '/' => 2,
+        '(' => -1, // should not output
+        ')' => -1, // should not output
     ];
 
     /** @var \SplQueue */
@@ -39,12 +39,12 @@ class ShuntingYard
             if ($this->isOperator($char)) {
                 $this->computeOperator($char);
             } elseif ($this->isNumber($char)) {
-                $this->outputQueue->enqueue($char);
+                $this->addOutput($char);
             }
         }
 
         foreach ($this->operatorStack as $operation) {
-            $this->outputQueue->enqueue($operation);
+            $this->addOutput($operation);
         }
 
         return implode(' ', $this->queueToArray($this->outputQueue));
@@ -67,6 +67,16 @@ class ShuntingYard
 
     /**
      * @param string $char
+     */
+    private function addOutput($char)
+    {
+        if ($this->shouldOutput($char)) {
+            $this->outputQueue->enqueue($char);
+        }
+    }
+
+    /**
+     * @param string $char
      * @return bool
      */
     private function isNumber($char)
@@ -84,6 +94,16 @@ class ShuntingYard
     }
 
     /**
+     * @param string $char
+     * @return bool
+     */
+    private function shouldOutput($char)
+    {
+        return $this->isNumber($char) ||
+            ($this->isOperator($char) && self::OPERATORS_TO_PRIORITY[$char] > 0);
+    }
+
+    /**
      * @param string $o1
      */
     private function computeOperator($o1)
@@ -91,8 +111,8 @@ class ShuntingYard
         if ($this->operatorStack->isEmpty()) {
             $this->operatorStack->push($o1);
         } elseif (')' === $o1) {
-            while ('(' !== ($o2 = $this->operatorStack->pop())) {
-                $this->outputQueue->enqueue($o2);
+            while (!$this->operatorStack->isEmpty() && '(' !== ($o2 = $this->operatorStack->pop())) {
+                $this->addOutput($o2);
             }
         } else {
             $o2 = $this->operatorStack->top();
@@ -100,7 +120,7 @@ class ShuntingYard
             if ($this->priorityDiff($o1, $o2) > 0) {
                 $this->operatorStack->push($o1);
             } else {
-                $this->outputQueue->enqueue($this->operatorStack->pop());
+                $this->addOutput($this->operatorStack->pop());
                 $this->computeOperator($o1);
             }
         }
