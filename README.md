@@ -1,2 +1,2 @@
 # PhpShuntingYard
-An shunting yard algorithm implementation in PHP
+A shunting yard algorithm implementation in PHP
